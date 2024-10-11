@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Home Page</h1>
+<ul>
+
+    <%
+    product.map((Product, index)=>{
+        %>
+        <hr>
+        <br>
+        <li><%=Product.id%></li>
+        <li><%=Product.product%></li>
+        <li><img src="<%=Product.image%>" width="50"></li>
+<% })%>
+    </ul>
+</body>
+</html>
