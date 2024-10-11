@@ -12,7 +12,7 @@ const regPost = (req, res) => {
 
         const checkUsername = username ?? null
         const checkPassword = password ?? null
-        const checkEmail = username ?? null
+        const checkEmail = email ?? null
 
         if(checkEmail && checkPassword && checkUsername){
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,12 +20,16 @@ const regPost = (req, res) => {
 
             const validateEmail = emailRegex.test(checkEmail) ? "<h1>Valid Email</h1>" : "<h1>Invalid Email</h1>"
             const validateName = nameRegex.test(checkUsername) ? "<h1>Valid Name</h1>" : "<h1>Invalid Name</h1>"
-            const validatePassword = checkPassword.length > 5 ? "<h1>Valid Password" : "<h1>Invalid Password</h1>"
+            const validatePassword = checkPassword.length > 5 ? "<h1>Valid Password</h1>" : "<h1>Invalid Password</h1>"
 
             return res.send({"Email": validateEmail, "Name": validateName, "Password": validatePassword})
             
 
         }else {
+            const {username, password, email} = req.body
+            console.log(username)
+            console.log(password)
+            console.log(email)
             return res.send("<h1>Fill All The Input Fields")
         }
 
