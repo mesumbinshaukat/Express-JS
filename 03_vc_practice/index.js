@@ -4,8 +4,10 @@ const express = require("express")
 // Import DotEnv Package
 const dotenv = require("dotenv").config()
 
+
+
 // Import Components From Components Folder
-const {regGet, regPost} = require("./components/Components")
+const {regGet, regPost} = require("./controller/Controller")
 
 const app = express()
 
