@@ -1,6 +1,9 @@
 // @method : GET
+// URL: http://localhost:500
 
 const bcrypt = require("bcryptjs")
+const { json } = require("express")
+const jwt = require("jsonwebtoken")
 
 const regGet = (req, res) => {
     return res.render("Registration")
@@ -8,6 +11,7 @@ const regGet = (req, res) => {
 
 
 // @method : POST
+// URL: http://localhost:500
 const regPost = async (req, res) => {
     try {
         const {username, password, email} = req.body
@@ -64,4 +68,51 @@ const regPost = async (req, res) => {
    
 }
 
-module.exports = {regGet, regPost}
+// @method: GET
+// URL: http://localhost:500/login
+const logPost = async (req, res) => {
+    try {
+        const {email, password} = req.body
+
+        const checkEmail = email ?? null
+        const checkPassword = password ?? null
+
+        const getAPI = await fetch(process.env.API)
+
+        const dataToJson = await getAPI.json()
+
+        if(checkEmail == null) {
+            return res.status(404).send("Invalid Email")
+        }
+
+        const fetchUser = dataToJson.filter((user) => user.email === checkEmail)
+
+        if (fetchUser.length == 0 || fetchUser == null){
+            return res.status(404).send("Invalid Credentials")
+        }
+
+        if(checkPassword == null){
+            return res.status(404).send("Empty Password")
+        }
+
+      
+        const validatePassword = bcrypt.compare(checkPassword, fetchUser[0].password)
+
+        if(validatePassword == false) {
+            return res.status(404).send("Invalid Password")
+        }
+
+        const authenticateUserData = fetchUser[0];
+        const Secret_Key = process.env.TOKEN_SECRET_KEY;
+    
+        const Token = jwt.sign(authenticateUserData, Secret_Key, { expiresIn: "1hr" })
+    
+        return res.status(302).send({ "loginUser": Token, "message": "Login Successful" })
+
+    } catch (e) {
+        console.error("Error:", e); 
+        return res.send("<h1>Error At: GET Request</h1>");
+    }
+}
+
+module.exports = {regGet, regPost, logPost}
