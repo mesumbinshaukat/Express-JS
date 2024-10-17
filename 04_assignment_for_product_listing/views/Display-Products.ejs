@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products</title>
+</head>
+
+<body>
+
+    <h1>All Products</h1>
+    <hr>
+    <table border="1" style="text-align: center; padding: 10px">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Product Description</th>
+                <th>Product Category</th>
+                <th>Product Price</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <% 
+                dataToJson.map((Product, index)=>{
+            %>
+
+            <tr>
+                <td><%=Product.product_id%></td>
+                <td><%=Product.product_name%></td>
+                <td><%=Product.product_description%></td>
+                <td><%=Product.product_category%></td>
+                <td><%=Product.product_price%></td>
+            </tr>
+            <%
+                })
+            %>
+        </tbody>
+    </table>
+</body>
+
+</html>
