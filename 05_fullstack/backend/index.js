@@ -39,7 +39,7 @@ app.post("/api/product", async (req, res) => {
 
   try {
     await axios.post(
-      "https://670cc21f7e5a228ec1d14719.mockapi.io/api/users/product",
+      process.env.MOCKAPI,
       newProduct
     );
 
