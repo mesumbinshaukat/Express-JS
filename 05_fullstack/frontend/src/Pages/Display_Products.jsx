@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 
+
 function Display_Products() {
   const [products, setProducts] = useState([]);
 
@@ -19,7 +20,7 @@ function Display_Products() {
     fetchInitialProducts();
 
     // Connect to the Socket.IO server
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_SOCKET_IO_CONNECTION);
 
     // Listen for real-time product updates
     socket.on("productData", (data) => {
