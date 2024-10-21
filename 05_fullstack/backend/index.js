@@ -17,9 +17,9 @@ const io = new Server(server, {
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(express.static('dist'))
 
 let products = [];
-
 
 // GET Products Endpoint
 app.get("/api/product", async (req, res) => {
