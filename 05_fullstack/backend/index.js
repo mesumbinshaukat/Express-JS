@@ -2,8 +2,9 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const dotenv = require("dotenv").config();
-const cors = require("cors"); // Allow cross-origin requests
+const cors = require("cors");
 const axios = require("axios");
+const {fetchProducts} = require('./Controllers/Product_API_Handler')
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -14,55 +15,51 @@ const io = new Server(server, {
 });
 
 // Middleware
-app.use(express.json()); // Parse JSON request bodies
-app.use(cors()); // Handle CORS for the frontend
+app.use(express.json());
+app.use(cors());
 
-// Mock Products Data
-let products = [
-  { id: "1", product: "TV", price: "20000" },
-  { id: "2", product: "Mobile", price: "10000" },
-  { id: "3", product: "Laptop", price: "30000" },
-];
+let products = [];
+
 
 // GET Products Endpoint
-app.get("/api/product", (req, res) => {
+app.get("/api/product", async (req, res) => {
+  const products = await fetchProducts();
   res.send(products);
 });
 
-// POST Endpoint to Add a New Product
-app.post("/api/product", (req, res) => {
+// POST Product Endpoint
+app.post("/api/product", async (req, res) => {
   const { product_id, product_name, product_price } = req.body;
 
   const newProduct = {
-    product_id: product_id,
-    product_name: product_name,
-    product_price: product_price,
-    product_description: "",
-    product_category: "",
-    product_image: "",
+    product_id,
+    product_name,
+    product_price,
   };
 
-  axios.post("https://670cc21f7e5a228ec1d14719.mockapi.io/api/users/product", newProduct)
-  .then((response) => {
-    console.log(response.data);  })
-  .catch((error) => {
-    console.error(error);
-  })
+  try {
+    await axios.post(
+      "https://670cc21f7e5a228ec1d14719.mockapi.io/api/users/product",
+      newProduct
+    );
 
-  // Add the new product to the list
-  products.push(newProduct);
+    // Fetch updated products and broadcast to all clients
+    const updatedProducts = await fetchProducts();
+    io.emit("productData", updatedProducts);
 
-  // Broadcast the new product to all connected clients
-  io.emit("productData", products);
-
-  res.status(201).json({ message: "Product added successfully", product: newProduct });
+    res.status(201).json({ message: "Product added successfully" });
+  } catch (error) {
+    console.error("Failed to add product:", error);
+    res.status(500).json({ error: "Failed to add product" });
+  }
 });
 
-// Handle Socket.IO Connections
-io.on("connection", (socket) => {
+// Socket.IO Setup
+io.on("connection", async (socket) => {
   console.log("Client connected:", socket.id);
 
-  // Send initial products when a client connects
+  // Send initial products to the client
+  const products = await fetchProducts();
   socket.emit("productData", products);
 
   socket.on("disconnect", () => {

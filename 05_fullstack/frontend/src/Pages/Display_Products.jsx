@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client"; // Import Socket.IO client
-import "../App.css";
+import { io } from "socket.io-client";
+import axios from "axios";
 
-function App() {
+function Display_Products() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    // Fetch initial products via Axios
+    const fetchInitialProducts = async () => {
+      try {
+        const response = await axios.get("/api/product");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchInitialProducts();
+
     // Connect to the Socket.IO server
     const socket = io("http://localhost:5000");
 
-    // Listen for product data from the server
+    // Listen for real-time product updates
     socket.on("productData", (data) => {
+      console.log("Received product data:", data);
       setProducts(data);
     });
 
-    // Cleanup: Disconnect the socket when the component unmounts
+    // Cleanup: Disconnect from the socket when the component unmounts
     return () => {
       socket.disconnect();
       console.log("Disconnected from Socket.IO server");
@@ -26,14 +39,28 @@ function App() {
       <h1>Display Product Page</h1>
       <p>Products Quantity: {products.length}</p>
 
-      {products.map((product, index) => (
-        <div key={index}>
-          <h4>{product.product}</h4>
-          <p>{product.price}</p>
-        </div>
-      ))}
+      <table border="1">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Product Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{product.product_id}</td>
+              <td>{product.product_name}</td>
+              <td>{product.product_price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 }
 
-export default App;
+export default Display_Products;
