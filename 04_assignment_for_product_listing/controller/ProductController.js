@@ -14,7 +14,12 @@ const addProductController_GET = (req, res) => {
 // URL: http://localhost:5000/add-product
 const addProductController_POST = async (req, res) => {
     try {
-        const { product_id, product_name, product_description, product_price, product_category } = req.body;
+
+        if (!req.file) {
+            return res.status(400).send("Image upload failed. Please try again.");
+        }
+
+        const { product_id, product_name, product_description, product_price, product_category, product_image } = req.body;
 
         // Here I'm using Regex for validating the data. (USED CHATGPT FOR REGEX) ;)
         const idRegex = /^\d+$/;
@@ -45,6 +50,7 @@ const addProductController_POST = async (req, res) => {
             product_description: product_description.trim(),
             product_price: parseFloat(product_price),
             product_category: product_category.trim(),
+            product_image: product_image
         };
 
         console.table(sanitizedData);
